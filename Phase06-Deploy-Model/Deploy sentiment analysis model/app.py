@@ -3,6 +3,10 @@ from model import *
 from datetime import datetime
 import pprint
 
+# Convert PyMongo Cursor to JSON
+from bson.json_util import dumps 
+from bson import json_util
+
 # Create API with flask
 from flask import Flask, request, jsonify
 
@@ -25,7 +29,9 @@ model_sentiment = torch.load('model6LSTM_snappfood')
 # Check which device we are using
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+###################################### create API #################################
 
+# API for returning request and response text
 @app.route("/predict", methods=['POST'])
 def predict():
     
@@ -51,10 +57,28 @@ def predict():
 
     return jsonify({"text":json_["text"] , "Sentiment":"SAD" if int(prediction.item())==1 else "HAPPY"})
 
+
+
+# API for returning whole of the database in the json file
+
+# in this case, when we convert our database into a JSON file, our timestamp changes and not in the desired way. 
+# to overcome this change, we should save timestamp in str() for. I mean in previous API(predict) we should save
+# "timestamp" : str(datetime.now()). 
+
+@app.route("/get_database", methods=['GET'])
+def get_database():
+
+    json_data = dumps(list(request_response.find()), ensure_ascii=False, indent=4, sort_keys=True, default=str)
+    # Writing data to file data.json
+    with open('data.json', 'w', encoding='utf-8') as file:
+        file.write(json_data)
     
+    return json_data
+    # return str(list(request_response.find()))
+     
 
 if __name__ == "__main__":
     app.run(debug=True)
 
-    # for respose in request_response.find({"Sentiment"}):
-    #     pprint.pprint(respose)
+
+
