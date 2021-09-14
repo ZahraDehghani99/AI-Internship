@@ -64,17 +64,11 @@ def readFile(filename):
   fileObj.close()
   return words
 
-# def read_file(path):
-#     lst = list()
-#     with open(path, 'r', encoding='utf-8') as f:
-#         for line in f:
-#             lst.append(line[:line.find('\n')])
-#     return lst 
 
 # length of this file is 1370
 stopwords = readFile('persian_stopwords_kharazi.txt')
 
-# print(stopwords) #????????????????????????????????????????????? these functions can't read stop word file
+# print(stopwords)
 
 # Because, after stemming we have '&' in between of our verbs, we should delete them in function delete_and.
 def delete_and(word):
