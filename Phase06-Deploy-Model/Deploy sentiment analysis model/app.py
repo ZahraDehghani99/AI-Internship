@@ -62,7 +62,7 @@ def predict():
 # API for returning whole of the database in the json file
 
 # in this case, when we convert our database into a JSON file, our timestamp changes and not in the desired way. 
-# to overcome this change, we should save timestamp in str() for. I mean in previous API(predict) we should save
+# to overcome this change, we should save timestamp in str() form. I mean in previous API(predict) we should save
 # "timestamp" : str(datetime.now()). 
 
 @app.route("/get_database", methods=['GET'])
