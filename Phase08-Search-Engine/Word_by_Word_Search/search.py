@@ -76,24 +76,24 @@ def search():
         #return record["doc_text"]
         cnt += 1
         # try:
-        #     text = display_output(search_keyword, record)
+        text = display_output(search_keyword, record)
         # except ValueError:
         #     return str(cnt)    
         # # return text
-        # title = record["doc_title"]
-        # data.append({'doc_title': title, 'doc_text':text})
+        title = record["doc_title"]
+        data.append({'doc_title': title, 'doc_text':text})
         # cnt += 1
-        if cnt == 2:
-            return record["doc_text"]
-            break
+        # if cnt == 2:
+        #     return record["doc_text"]
+        #     break
     #return str(data)
-    # json_data = dumps(data, ensure_ascii=False, indent=4, sort_keys=True, default=str)
+    json_data = dumps(data, ensure_ascii=False, indent=4, sort_keys=True, default=str)
     
-    # # Writing data to file data.json
-    # with open('data.json', 'w', encoding='utf-8') as file:
-    #     file.write(json_data)
+    # Writing data to file data.json
+    with open('data.json', 'w', encoding='utf-8') as file:
+        file.write(json_data)
     
-    # return json_data
+    return json_data
 
 
 if __name__ == "__main__":
