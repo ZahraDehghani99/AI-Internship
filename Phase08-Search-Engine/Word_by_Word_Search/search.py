@@ -1,3 +1,5 @@
+# libraries for working with text
+import unicodedata
 import re
 
 # libraries for create API with flask
@@ -16,6 +18,9 @@ from bson import json_util
 def display_output(search_keyword, mongodb_document):
     
     search_keyword_lst = search_keyword.split()
+    # unicodedata.normalize : It used to remove \xa0 (no-break space) from a string
+    # Here, NFKD denotes the normal form KD. It replaces all the compatibility characters with their equivalent characters.
+    # document = unicodedata.normalize("NFKD", mongodb_document["doc_text"]) 
     text_lst = re.split('\.| ', mongodb_document["doc_text"]) # split text based on . and space(split string with multiple delimiters)
     
     # find index of first matching for each word of search_keyword
@@ -29,6 +34,13 @@ def display_output(search_keyword, mongodb_document):
             match_index.append(text_lst.index(search_keyword_lst[i]))
         except ValueError:
             pass    
+
+    if len(match_index) == 0:
+        for i in range(len(search_keyword_lst)):
+            for j in range(len(text_lst)):
+                if search_keyword_lst[i] in text_lst[j]:
+                    match_index.append(j)
+                
 
     surrounding_words = []
     # return str(-5+min(match_index))
@@ -69,24 +81,15 @@ def search():
 
     # create list to store our output in it
     data = [{"search_keyword": search_keyword}]
-    cnt = 0
 
     # return str(ham.find({"$text": { "$search": search_keyword}}, {"doc_id":0, "_id":0}).count())
+    
     for record in ham.find({"$text": { "$search": search_keyword}}, {"doc_id":0, "_id":0}).sort([("score", {"$meta": "textScore"})]):
-        #return record["doc_text"]
-        cnt += 1
-        # try:
+
         text = display_output(search_keyword, record)
-        # except ValueError:
-        #     return str(cnt)    
-        # # return text
         title = record["doc_title"]
         data.append({'doc_title': title, 'doc_text':text})
-        # cnt += 1
-        # if cnt == 2:
-        #     return record["doc_text"]
-        #     break
-    #return str(data)
+
     json_data = dumps(data, ensure_ascii=False, indent=4, sort_keys=True, default=str)
     
     # Writing data to file data.json
