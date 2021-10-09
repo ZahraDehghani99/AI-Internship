@@ -1,5 +1,4 @@
 # libraries for working with text
-import unicodedata
 import re
 
 # libraries for create API with flask
@@ -18,23 +17,12 @@ from bson import json_util
 def display_output(search_keyword, mongodb_document):
     
     search_keyword_lst = search_keyword.split()
-    # unicodedata.normalize : It used to remove \xa0 (no-break space) from a string
-    # Here, NFKD denotes the normal form KD. It replaces all the compatibility characters with their equivalent characters.
-    # document = unicodedata.normalize("NFKD", mongodb_document["doc_text"]) 
     text_lst = re.split('\.| ', mongodb_document["doc_text"]) # split text based on . and space(split string with multiple delimiters)
     
-    # find index of first matching for each word of search_keyword
+    # list of first matching indexes
     match_index = []
 
-
-    # we should use try and except to except valueError when we  
-    # don't have specific word of search keyword in doc_text
-    for i in range(len(search_keyword_lst)):
-        try:
-            match_index.append(text_lst.index(search_keyword_lst[i]))
-        except ValueError:
-            pass    
-
+    # find index of first matching for each word of search_keyword
     if len(match_index) == 0:
         for i in range(len(search_keyword_lst)):
             for j in range(len(text_lst)):
@@ -83,7 +71,7 @@ def search():
     data = [{"search_keyword": search_keyword}]
 
     # return str(ham.find({"$text": { "$search": search_keyword}}, {"doc_id":0, "_id":0}).count())
-    
+
     for record in ham.find({"$text": { "$search": search_keyword}}, {"doc_id":0, "_id":0}).sort([("score", {"$meta": "textScore"})]):
 
         text = display_output(search_keyword, record)
